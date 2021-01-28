@@ -95,10 +95,13 @@ def get_single_journal(journalID):
 def post_signup():
     username = request.json['Username']
     password = request.json['Password']
-    facebook = request.json['Facebook']
-    google = request.json['Google']
+    confirm_password = request.json['Confirm Password']
+    email = request.json['EmailID']
+    if confirm_password != password or Worker.userInfoTable.search("EmailID", str(email)):
+        return {"Success": False}
     if not Worker.userInfoTable.search("Username", str(username)):
-        Worker.userInfoTable.insert({"Username": str(username), "Password": str(password), "Active": True})
+        Worker.userInfoTable.insert({"Username": str(username), "Password": str(password), "Active": True,
+                                     "EmailID": str(email)})
         return {"Success": True}
     return {"Success": False}
 
@@ -124,7 +127,7 @@ def post_deleteAccount():
     password = request.json['Password']
     if Worker.userInfoTable.search("Username", str(username)) and Worker.userInfoTable.search("Password", str(password)):
         Worker.userInfoTable.delete_by_field("Username", username)
-        # ToDo - delete user account history from DB
+        # delete user account history from DB
         return {"Success": True}
     return {"Success": False}
 
