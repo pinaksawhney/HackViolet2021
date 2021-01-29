@@ -79,16 +79,6 @@ def get_profile(username):
                    }
     return json.dumps(profile)
 
-
-@app.route("/get_single_journal/<int:journalID>")
-def post_profile(journalID):
-    journal = {}
-    if Worker.isAuth:
-        fetched_journal = Worker.designProjectTable.search("JournalID", journalID)
-        journal = fetched_journal[0]["fields"]
-    return journal
-
-
 @app.route("/post_signup/", methods=['POST'])
 def post_signup():
     username = request.json['Username']
