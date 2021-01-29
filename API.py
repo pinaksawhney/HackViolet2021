@@ -1,6 +1,7 @@
 import boto3
 import base64
 import json
+from googlesearch import search
 from airtable import Airtable
 from random import randrange
 from flask import Flask, request
@@ -21,14 +22,12 @@ def index():
     return "<h2>Add API documentation here !!</h2>"
 
 
-@app.route("/recommendation_from_ml/JournalText=<string:JournalText>&Title=<string:Title>")
-def recommendation_from_ml(JournalText, Title):
-    # ToDo - recommendation system based on text and title
-    return {'Activities': ['Hiking', 'Basketball', 'Swimming', 'Workout'], 'Groups':
-        ['Travel and Tourism', 'Sports and Recreation', 'Gym and Fitness'], 'Resources':
-                ['World Health organization https://www.who.int/health-topics/mental-health#tab=tab_1',
-                 'CDC https://www.cdc.gov/mentalhealth/index.htm',
-                 'Psychological health https://www.mentalhealth.gov/basics/what-is-mental-health']}
+@app.route("/get_homepage/query=<string:q>")
+def get_homepage(q):
+    search_results = []
+    for i in search(q, tld="com", num=10, stop=10, pause=1):
+        search_results.append(i)
+    return json.dumps(search_results)
 
 
 def upload_to_s3(filename):
@@ -78,6 +77,7 @@ def get_profile(username):
                    "Photo": record["Photo"][0]["url"]
                    }
     return json.dumps(profile)
+
 
 @app.route("/post_signup/", methods=['POST'])
 def post_signup():
