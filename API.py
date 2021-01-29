@@ -11,7 +11,7 @@ class Worker:
     unique = 0
     isAuth = False
     userInfoTable = Airtable('appKGveLcvfcFaftJ', "UserInfo", "key1B3UuMtQpUkWQS")
-    designProjectTable = Airtable('appKGveLcvfcFaftJ', "TrialEnrollment", "key1B3UuMtQpUkWQS")
+    designProjectTable = Airtable('appKGveLcvfcFaftJ', "UserProfile", "key1B3UuMtQpUkWQS")
 
 
 @app.route("/")
@@ -66,24 +66,22 @@ def post_journal():
     return {"Success": False}
 
 
-@app.route("/get_all_journals/username=<string:username>")
-def get_all_journals(username):
-    all_journals = []
+@app.route("/get_profile/username=<string:username>")
+def get_profile(username):
+    profile = {}
     if Worker.isAuth:
-        records = Worker.designProjectTable.search('UserName', str(username))
-        for r in records:
-            img = ""
-            if "JournalImage" in r["fields"].keys():
-                img = r["fields"]["JournalImage"][0]["url"]
-            curr = {"JournalID": r["fields"]["JournalID"], "Mood": r["fields"]["Mood"], "UserID": r["fields"]["UserID"],
-                    "Title": r["fields"]["Title"], "UserName": r["fields"]["UserName"], "JournalImage": img,
-                    "JournalText": r["fields"]["JournalText"], "Date": r["fields"]["Date"]}
-            all_journals.append(curr)
-    return json.dumps(all_journals)
+        record = Worker.designProjectTable.search('UserName', str(username))[0]["fields"]
+        chatGroups = record["ChatGroup"].split(',')
+        interests = record["Interests"].split(',')
+        profile = {"UserName": record["UserName"], "Bio": record["Bio"], "FirstName": record["FirstName"],
+                   "LastName": record['LastName'], "ChatGroup": chatGroups, "Interests": interests,
+                   "Photo": record["Photo"][0]["url"]
+                   }
+    return json.dumps(profile)
 
 
 @app.route("/get_single_journal/<int:journalID>")
-def get_single_journal(journalID):
+def post_profile(journalID):
     journal = {}
     if Worker.isAuth:
         fetched_journal = Worker.designProjectTable.search("JournalID", journalID)
@@ -127,7 +125,7 @@ def post_deleteAccount():
     password = request.json['Password']
     if Worker.userInfoTable.search("Username", str(username)) and Worker.userInfoTable.search("Password", str(password)):
         Worker.userInfoTable.delete_by_field("Username", username)
-        # delete user account history from DB
+        # ToDo- delete user account history from DB
         return {"Success": True}
     return {"Success": False}
 
