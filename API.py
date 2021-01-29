@@ -2,6 +2,7 @@ import boto3
 import base64
 import json
 from airtable import Airtable
+from random import randrange
 from flask import Flask, request
 
 app = Flask(__name__)
@@ -39,29 +40,28 @@ def make_attachment(url):
     return [{'url': url}]
 
 
-@app.route("/post_journal/", methods=['POST'])
-def post_journal():
-    title = request.json['title']
-    date = request.json['date']
-    username = request.json['username']
-    userID = 5
-    journalText = request.json['journalText']
-    journalImage = request.json['journalImage']
+@app.route("/post_profile/", methods=['POST'])
+def post_profile():
+    username = request.json['UserName']
+    first = request.json['FirstName']
+    last = request.json['LastName']
+    bio = request.json['Bio']
+    photo = request.json['Photo']
+    chat = request.json['ChatGroup']
+    interest = request.json['Interests']
 
     if Worker.isAuth:
         filename = ""
-        if journalImage:
-            imgData = base64.b64decode(journalImage)
-            # filename = username + str(Worker.unique) + str(randrange(1000000)) + ".jpg"
+        if photo:
+            imgData = base64.b64decode(photo)
+            filename = username + str(Worker.unique) + str(randrange(1000000)) + ".jpg"
             Worker.unique += 1
             with open(filename, 'wb') as f:
                 f.write(imgData)
-        # mood = mood_from_ml(journalText, title)
         upload_to_s3(filename)
         url = "https://sigmoidhack.s3.amazonaws.com/" + filename
-        # Worker.designProjectTable.insert({"UserID": userID, "UserName": username, "Date": date, "Title": title,
-        #                                  "JournalText": journalText, "JournalImage": make_attachment(url),
-        #                                  "Mood": mood})
+        Worker.designProjectTable.insert({"FirstName": first, "UserName": username, "LastName": last, "Bio": bio,
+                                          "ChatGroup": chat, "Interests": interest, "Photo": make_attachment(url)})
         return {"Success": True}
     return {"Success": False}
 
@@ -123,7 +123,8 @@ def post_login():
 def post_deleteAccount():
     username = request.json['Username']
     password = request.json['Password']
-    if Worker.userInfoTable.search("Username", str(username)) and Worker.userInfoTable.search("Password", str(password)):
+    if Worker.userInfoTable.search("Username", str(username)) and Worker.userInfoTable.search("Password",
+                                                                                              str(password)):
         Worker.userInfoTable.delete_by_field("Username", username)
         # ToDo- delete user account history from DB
         return {"Success": True}
@@ -135,3 +136,5 @@ Main Routine
 """
 if __name__ == "__main__":
     app.run()
+
+# https://hackviolet21.herokuapp.com/
