@@ -22,6 +22,7 @@ class Worker:
 @app.route("/")
 def index():
     """Present some documentation"""
+    # https://hackviolet21.herokuapp.com/
     return "<h2>Add API documentation here !!</h2>"
 
 
@@ -147,5 +148,3 @@ Main Routine
 """
 if __name__ == "__main__":
     app.run()
-
-# https://hackviolet21.herokuapp.com/
