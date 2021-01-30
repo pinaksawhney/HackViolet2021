@@ -1,12 +1,17 @@
 import boto3
 import base64
 import json
+import requests
+from bs4 import BeautifulSoup
+from flask_cors import CORS, cross_origin
 from googlesearch import search
 from airtable import Airtable
 from random import randrange
 from flask import Flask, request
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 class Worker:
@@ -17,17 +22,25 @@ class Worker:
 
 
 @app.route("/")
+@cross_origin()
 def index():
     """Present some documentation"""
     return "<h2>Add API documentation here !!</h2>"
 
 
 @app.route("/get_homepage/query=<string:q>")
+@cross_origin()
 def get_homepage(q):
     search_results = []
     for i in search(q, tld="com", num=10, stop=10, pause=1):
         search_results.append(i)
     return json.dumps(search_results)
+
+
+@app.route("/get_resources/")
+@cross_origin()
+def get_resources():
+    pass
 
 
 def upload_to_s3(filename):
@@ -40,6 +53,7 @@ def make_attachment(url):
 
 
 @app.route("/post_profile/", methods=['POST'])
+@cross_origin()
 def post_profile():
     username = request.json['UserName']
     first = request.json['FirstName']
@@ -66,6 +80,7 @@ def post_profile():
 
 
 @app.route("/get_profile/username=<string:username>")
+@cross_origin()
 def get_profile(username):
     profile = {}
     if Worker.isAuth:
@@ -80,6 +95,7 @@ def get_profile(username):
 
 
 @app.route("/post_signup/", methods=['POST'])
+@cross_origin()
 def post_signup():
     username = request.json['Username']
     password = request.json['Password']
@@ -95,6 +111,7 @@ def post_signup():
 
 
 @app.route("/post_login/", methods=['POST'])
+@cross_origin()
 def post_login():
     # ToDo - FB and Google Auth login
     username = request.json['Username']
@@ -110,6 +127,7 @@ def post_login():
 
 
 @app.route("/delete_account/", methods=['POST'])
+@cross_origin()
 def post_deleteAccount():
     username = request.json['Username']
     password = request.json['Password']
@@ -126,5 +144,6 @@ Main Routine
 """
 if __name__ == "__main__":
     app.run()
+
 
 # https://hackviolet21.herokuapp.com/
