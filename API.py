@@ -9,7 +9,6 @@ from random import randrange
 from flask import Flask, request
 
 app = Flask(__name__)
-CORS(app)
 
 
 class Worker:
