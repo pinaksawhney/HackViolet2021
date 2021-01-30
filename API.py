@@ -1,12 +1,15 @@
 import boto3
 import base64
 import json
+
+from flask_cors import CORS
 from googlesearch import search
 from airtable import Airtable
 from random import randrange
 from flask import Flask, request
 
 app = Flask(__name__)
+CORS(app)
 
 
 class Worker:
