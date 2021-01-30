@@ -1,8 +1,6 @@
 import boto3
 import base64
 import json
-import requests
-from bs4 import BeautifulSoup
 from flask_cors import CORS, cross_origin
 from googlesearch import search
 from airtable import Airtable
