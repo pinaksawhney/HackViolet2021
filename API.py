@@ -35,6 +35,16 @@ def get_homepage(q):
     return json.dumps(search_results)
 
 
+@app.route("/get_groups/user=<string:user>")
+@cross_origin()
+def get_groups(user):
+    groups = []
+    if Worker.isAuth:
+        record = Worker.designProjectTable.search('UserName', str(user))[0]["fields"]
+        groups = record["ChatGroup"].split(',')
+    return json.dumps(groups)
+
+
 @app.route("/get_resources/")
 @cross_origin()
 def get_resources():
@@ -142,6 +152,5 @@ Main Routine
 """
 if __name__ == "__main__":
     app.run()
-
 
 # https://hackviolet21.herokuapp.com/
