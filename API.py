@@ -2,7 +2,6 @@ import boto3
 import base64
 import json
 
-from flask_cors import CORS
 from googlesearch import search
 from airtable import Airtable
 from random import randrange
@@ -22,6 +21,8 @@ class Worker:
 def index():
     """Present some documentation"""
     # https://hackviolet21.herokuapp.com/
+    # https://airtable.com/tbl3eJHHpfoyoFGnH/viwGYBQerAsvmawbm?blocks=hide
+    # https://s3.console.aws.amazon.com/s3/buckets/sigmoidhack?region=us-east-1&tab=objects
     return "<h2>Add API documentation here !!</h2>"
 
 
